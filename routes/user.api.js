@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
+const adminAuth = require("../middleware/admin");
 
 require("colors");
 require("dotenv").config();
@@ -18,6 +19,7 @@ const router = express.Router();
  */
 router.post(
     "/signup",
+    adminAuth,
     [
         check("email", "Email is required.").isEmail(),
         check("password")

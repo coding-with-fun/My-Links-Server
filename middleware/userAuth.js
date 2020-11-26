@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const User = require("../models/User");
 
 require("dotenv").config();
 require("colors");
 
-const adminAuth = async (req, res, next) => {
+const userAuth = async (req, res, next) => {
     try {
         const token = req.header("x-auth-token");
 
@@ -33,7 +34,7 @@ const adminAuth = async (req, res, next) => {
                 const existingUser = await User.findById(decoded.user.id);
 
                 if (!existingUser) {
-                    return res.status(400).json({
+                    return res.status(404).json({
                         status: false,
                         error: [
                             {
@@ -43,7 +44,7 @@ const adminAuth = async (req, res, next) => {
                     });
                 }
 
-                if (existingUser.email === "dev@arccoder.in");
+                req.user = decoded.user;
                 next();
             }
         });
@@ -60,4 +61,4 @@ const adminAuth = async (req, res, next) => {
     }
 };
 
-module.exports = adminAuth;
+module.exports = userAuth;

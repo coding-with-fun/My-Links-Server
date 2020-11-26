@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
-const adminAuth = require("../middleware/admin");
+const adminAuth = require("../middleware/adminAuth");
 
 require("colors");
 require("dotenv").config();
@@ -26,12 +26,12 @@ router.post(
             .notEmpty()
             .withMessage("Password is required.")
             .isLength({ min: 6 })
-            .withMessage("Password must be at least 6 characters long"),
+            .withMessage("Password must be at least 6 characters long."),
         check("confirmPassword")
             .notEmpty()
             .withMessage("Password is required.")
             .isLength({ min: 6 })
-            .withMessage("Password must be at least 6 characters long"),
+            .withMessage("Password must be at least 6 characters long."),
     ],
     async (req, res) => {
         try {
@@ -104,6 +104,62 @@ router.post(
                     ],
                 });
             });
+        } catch (error) {
+            console.log(`${error.message}`.magenta);
+
+            return res.status(500).json({
+                status: false,
+                response: [
+                    {
+                        msg: "Internal server error.",
+                    },
+                ],
+            });
+        }
+    }
+);
+
+/**
+ * @route           POST /user/signin
+ * @description     SignIn User
+ * @access          Public
+ */
+router.post(
+    "/signin",
+    [
+        check("email", "Email is required.").isEmail(),
+        check("password")
+            .notEmpty()
+            .withMessage("Password is required.")
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters long."),
+    ],
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    status: false,
+                    response: errors.array(),
+                });
+            }
+
+            const { email, password } = req.body;
+
+            // TODO Check if user exists
+            const existingUser = await User.findOne({ email });
+
+            if (!existingUser) {
+                return res.status(400).json({
+                    status: false,
+                    response: [
+                        {
+                            msg: "User does not exist.",
+                        },
+                    ],
+                });
+            }
         } catch (error) {
             console.log(`${error.message}`.magenta);
 

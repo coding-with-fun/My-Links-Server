@@ -43,7 +43,17 @@ const adminAuth = async (req, res, next) => {
                     });
                 }
 
-                if (existingUser.email === "dev@arccoder.in");
+                if (!existingUser.isAdmin) {
+                    return res.status(401).json({
+                        status: false,
+                        error: [
+                            {
+                                msg: "User is not authenticated.",
+                            },
+                        ],
+                    });
+                }
+
                 next();
             }
         });

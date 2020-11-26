@@ -160,6 +160,44 @@ router.post(
                     ],
                 });
             }
+
+            // TODO Verify credentials
+            const verifyUser = await bcrypt.compare(
+                password,
+                existingUser.password
+            );
+
+            if (!verifyUser) {
+                return res.status(401).json({
+                    status: false,
+                    response: [
+                        {
+                            msg: "Invalid credentials.",
+                        },
+                    ],
+                });
+            }
+
+            // TODO Return JWT
+            const payload = {
+                user: {
+                    id: existingUser._id,
+                },
+            };
+
+            jwt.sign(payload, process.env.JWT_SECRET, (error, token) => {
+                if (error) throw error;
+
+                return res.status(200).json({
+                    status: true,
+                    token,
+                    success: [
+                        {
+                            msg: "User signed in successfully.",
+                        },
+                    ],
+                });
+            });
         } catch (error) {
             console.log(`${error.message}`.magenta);
 

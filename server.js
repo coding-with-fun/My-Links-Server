@@ -19,3 +19,6 @@ app.listen(PORT, () => {
 
 // * Connect to Database
 connectDB();
+
+// * Defining routes
+app.use("/user", require("./routes/user.api"));

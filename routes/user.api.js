@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
 const userAuth = require("../middleware/userAuth");
+const getUserId = require("../config/getUserId");
 
 require("colors");
 require("dotenv").config();
@@ -20,6 +21,9 @@ const router = express.Router();
 router.get("/details", async (req, res) => {
     try {
         const { username } = req.query;
+
+        const testData = getUserId(req);
+        console.log(testData);
 
         const existingUser = await User.findOne(
             { userName: username },

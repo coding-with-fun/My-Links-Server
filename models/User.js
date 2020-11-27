@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema({
     about: {
         type: String,
         default: "",
-        maxlength: 1000,
+        maxlength: 300,
     },
 
     links: [

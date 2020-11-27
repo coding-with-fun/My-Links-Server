@@ -51,48 +51,69 @@ router.get("/details", userAuth, async (req, res) => {
  * @description     Add new link
  * @access          Private
  */
-router.post("/addlink", userAuth, async (req, res) => {
-    try {
-        const userID = req.user.id;
-        const { name, url } = req.body;
-        const options = {
-            new: true,
-        };
+router.post(
+    "/addlink",
+    userAuth,
+    [
+        check("name").notEmpty().withMessage("Link name is required."),
+        check("url")
+            .notEmpty()
+            .withMessage("Link URL is required.")
+            .isURL()
+            .withMessage("Please enter a valid URL."),
+    ],
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
 
-        const existingUser = await User.findById(userID, { links: 1 });
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    status: false,
+                    response: errors.array(),
+                });
+            }
 
-        existingUser.links.push({
-            name,
-            url,
-        });
+            const userID = req.user.id;
+            const { name, url } = req.body;
+            const options = {
+                new: true,
+            };
 
-        const updatedUser = await User.findByIdAndUpdate(
-            userID,
-            existingUser,
-            options
-        );
+            const existingUser = await User.findById(userID, { links: 1 });
 
-        return res.status(200).json({
-            status: true,
-            userDetails: updatedUser,
-            success: [
-                {
-                    msg: "Added link successfully.",
-                },
-            ],
-        });
-    } catch (error) {
-        console.log(`${error.message}`.magenta);
+            existingUser.links.push({
+                name,
+                url,
+            });
 
-        return res.status(500).json({
-            status: false,
-            response: [
-                {
-                    msg: "Internal server error.",
-                },
-            ],
-        });
+            const updatedUser = await User.findByIdAndUpdate(
+                userID,
+                existingUser,
+                options
+            );
+
+            return res.status(200).json({
+                status: true,
+                userDetails: updatedUser,
+                success: [
+                    {
+                        msg: "Added link successfully.",
+                    },
+                ],
+            });
+        } catch (error) {
+            console.log(`${error.message}`.magenta);
+
+            return res.status(500).json({
+                status: false,
+                response: [
+                    {
+                        msg: "Internal server error.",
+                    },
+                ],
+            });
+        }
     }
-});
+);
 
 module.exports = router;

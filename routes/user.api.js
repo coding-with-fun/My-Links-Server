@@ -146,7 +146,7 @@ router.patch(
 
             const { linkID, name, url } = req.body;
 
-            const updatedUser = await User.update(
+            const updatedUser = await User.updateOne(
                 { "links._id": linkID },
                 {
                     $set: {

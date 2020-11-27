@@ -15,13 +15,16 @@ const router = express.Router();
 /**
  * @route           GET /user/details
  * @description     Get user details
- * @access          Private
+ * @access          Public
  */
-router.get("/details", userAuth, async (req, res) => {
+router.get("/details", async (req, res) => {
     try {
-        const userID = req.user.id;
+        const { username } = req.query;
 
-        const existingUser = await User.findById(userID, { password: 0 });
+        const existingUser = await User.findOne(
+            { userName: username },
+            { password: 0 }
+        );
 
         return res.status(200).json({
             status: true,
@@ -79,11 +82,17 @@ router.post(
                 new: true,
             };
 
+            let newUrl = url;
+
+            if (!url.includes("https://", 0) && !url.includes("http://", 0)) {
+                newUrl = "https://" + url;
+            }
+
             const existingUser = await User.findById(userID, { links: 1 });
 
             existingUser.links.push({
                 name,
-                url,
+                url: newUrl,
             });
 
             const updatedUser = await User.findByIdAndUpdate(
@@ -146,12 +155,18 @@ router.patch(
 
             const { linkID, name, url } = req.body;
 
+            let newUrl = url;
+
+            if (!url.includes("https://", 0) && !url.includes("http://", 0)) {
+                newUrl = "https://" + url;
+            }
+
             const updatedUser = await User.updateOne(
                 { "links._id": linkID },
                 {
                     $set: {
                         "links.$.name": name,
-                        "links.$.url": url,
+                        "links.$.url": newUrl,
                     },
                 }
             );

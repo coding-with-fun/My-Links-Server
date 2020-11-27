@@ -8,10 +8,12 @@ const UserSchema = new mongoose.Schema({
 
     name: {
         type: String,
+        default: "",
     },
 
     userName: {
         type: String,
+        default: "",
     },
 
     email: {
@@ -24,20 +26,9 @@ const UserSchema = new mongoose.Schema({
 
     about: {
         type: String,
+        default: "",
         maxlength: 1000,
     },
-
-    topLinks: [
-        {
-            name: {
-                type: String,
-            },
-
-            url: {
-                type: String,
-            },
-        },
-    ],
 
     links: [
         {

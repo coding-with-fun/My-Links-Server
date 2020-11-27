@@ -124,7 +124,15 @@ router.post(
 router.patch(
     "/updatelink",
     userAuth,
-    [check("linkID").notEmpty().withMessage("Link ID is required.")],
+    [
+        check("linkID").notEmpty().withMessage("Link ID is required."),
+        check("name").notEmpty().withMessage("Link name is required."),
+        check("url")
+            .notEmpty()
+            .withMessage("Link URL is required.")
+            .isURL()
+            .withMessage("Please enter a valid URL."),
+    ],
     async (req, res) => {
         try {
             const errors = validationResult(req);
@@ -136,16 +144,16 @@ router.patch(
                 });
             }
 
-            const userID = req.user.id;
-            const { linkID } = req.body;
-            const options = {
-                new: true,
-            };
+            const { linkID, name, url } = req.body;
 
-            const updatedUser = await User.findByIdAndUpdate(
-                userID,
-                { $pull: { links: { _id: linkID } } },
-                options
+            const updatedUser = await User.update(
+                { "links._id": linkID },
+                {
+                    $set: {
+                        "links.$.name": name,
+                        "links.$.url": url,
+                    },
+                }
             );
 
             return res.status(200).json({
@@ -153,7 +161,7 @@ router.patch(
                 userDetails: updatedUser,
                 success: [
                     {
-                        msg: "Deleted link successfully.",
+                        msg: "Updated link successfully.",
                     },
                 ],
             });

@@ -116,4 +116,64 @@ router.post(
     }
 );
 
+/**
+ * @route           DELETE /user/deletelink
+ * @description     Add new link
+ * @access          Private
+ */
+router.delete(
+    "/deletelink",
+    userAuth,
+    [check("linkID").notEmpty().withMessage("Link ID is required.")],
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    status: false,
+                    response: errors.array(),
+                });
+            }
+
+            const userID = req.user.id;
+            const { linkID } = req.body;
+            const options = {
+                new: true,
+            };
+
+            const existingUser = await User.findById(userID, { links: 1 });
+
+            existingUser.links.pull({ _id: linkID });
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userID,
+                existingUser,
+                options
+            );
+
+            return res.status(200).json({
+                status: true,
+                userDetails: updatedUser,
+                success: [
+                    {
+                        msg: "Deleted link successfully.",
+                    },
+                ],
+            });
+        } catch (error) {
+            console.log(`${error.message}`.magenta);
+
+            return res.status(500).json({
+                status: false,
+                response: [
+                    {
+                        msg: "Internal server error.",
+                    },
+                ],
+            });
+        }
+    }
+);
+
 module.exports = router;

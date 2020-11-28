@@ -22,14 +22,16 @@ router.get("/details", async (req, res) => {
     try {
         let existingUser;
         const { username } = req.query;
-        const { id } = getUserId(req);
 
         if (username) {
+            console.log("I am in username");
             existingUser = await User.findOne(
                 { userName: username },
                 { password: 0 }
             );
         } else {
+            console.log("I am in id");
+            const { id } = getUserId(req, res);
             existingUser = await User.findById(id, { password: 0 });
         }
 

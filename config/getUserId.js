@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 require("colors");
 
-const getUserId = (req) => {
+const getUserId = (req, res) => {
     try {
         const token = req.header("x-auth-token");
         let userToken = null;

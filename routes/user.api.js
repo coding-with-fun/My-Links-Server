@@ -20,15 +20,18 @@ const router = express.Router();
  */
 router.get("/details", async (req, res) => {
     try {
+        let existingUser;
         const { username } = req.query;
+        const { id } = getUserId(req);
 
-        const testData = getUserId(req);
-        console.log(testData);
-
-        const existingUser = await User.findOne(
-            { userName: username },
-            { password: 0 }
-        );
+        if (username) {
+            existingUser = await User.findOne(
+                { userName: username },
+                { password: 0 }
+            );
+        } else {
+            existingUser = await User.findById(id, { password: 0 });
+        }
 
         return res.status(200).json({
             status: true,

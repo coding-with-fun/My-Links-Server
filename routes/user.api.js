@@ -24,13 +24,11 @@ router.get("/details", async (req, res) => {
         const { username } = req.query;
 
         if (username) {
-            console.log("I am in username");
             existingUser = await User.findOne(
                 { userName: username },
                 { password: 0 }
             );
         } else {
-            console.log("I am in id");
             const token = req.header("x-auth-token");
 
             if (!token) {

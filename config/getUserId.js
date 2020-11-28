@@ -3,21 +3,9 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 require("colors");
 
-const getUserId = (req, res) => {
+const getUserId = (token, res) => {
     try {
-        const token = req.header("x-auth-token");
         let userToken = null;
-
-        if (!token) {
-            return res.status(401).json({
-                status: false,
-                error: [
-                    {
-                        msg: "No token, authorization denied.",
-                    },
-                ],
-            });
-        }
 
         jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
             if (error) {

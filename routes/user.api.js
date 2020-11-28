@@ -31,7 +31,20 @@ router.get("/details", async (req, res) => {
             );
         } else {
             console.log("I am in id");
-            const { id } = getUserId(req, res);
+            const token = req.header("x-auth-token");
+
+            if (!token) {
+                return res.status(401).json({
+                    status: false,
+                    error: [
+                        {
+                            msg: "No token, authorization denied.",
+                        },
+                    ],
+                });
+            }
+
+            const { id } = getUserId(token, res);
             existingUser = await User.findById(id, { password: 0 });
         }
 

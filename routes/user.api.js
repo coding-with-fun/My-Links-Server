@@ -228,8 +228,6 @@ router.delete("/deletelink", userAuth, async (req, res) => {
             new: true,
         };
 
-        console.log(_id);
-
         const updatedUser = await User.findByIdAndUpdate(
             userID,
             { $pull: { links: { _id: _id } } },

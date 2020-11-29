@@ -70,6 +70,66 @@ router.get("/details", async (req, res) => {
 });
 
 /**
+ * @route           POST /user/update
+ * @description     Add new link
+ * @access          Private
+ */
+router.post(
+    "/update",
+    userAuth,
+    [
+        check("name").notEmpty().withMessage("User name is required."),
+        check("userName").notEmpty().withMessage("User name is required."),
+        check("about").notEmpty().withMessage("User summery is required."),
+        check("userImage")
+            .notEmpty()
+            .withMessage("User image URL is required."),
+        check("email").notEmpty().withMessage("User email is required."),
+    ],
+    async (req, res) => {
+        try {
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    status: false,
+                    response: errors.array(),
+                });
+            }
+
+            const userID = req.user.id;
+            const user = req.body;
+            console.log(userID);
+
+            const existingUser = await User.findByIdAndUpdate(userID, user);
+
+            console.log(existingUser);
+
+            return res.status(200).json({
+                status: true,
+                userDetails: existingUser,
+                success: [
+                    {
+                        msg: "Fetched user's details successfully.",
+                    },
+                ],
+            });
+        } catch (error) {
+            console.log(`${error.message}`.magenta);
+
+            return res.status(500).json({
+                status: false,
+                response: [
+                    {
+                        msg: "Internal server error.",
+                    },
+                ],
+            });
+        }
+    }
+);
+
+/**
  * @route           POST /user/addlink
  * @description     Add new link
  * @access          Private

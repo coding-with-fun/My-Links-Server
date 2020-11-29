@@ -99,10 +99,7 @@ router.post(
 
             const userID = req.user.id;
             const user = req.body;
-            console.log(userID);
-
             const existingUser = await User.findByIdAndUpdate(userID, user);
-
             console.log(existingUser);
 
             return res.status(200).json({

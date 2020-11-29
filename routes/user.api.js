@@ -78,9 +78,7 @@ router.post(
     "/update",
     userAuth,
     [
-        check("name").notEmpty().withMessage("User name is required."),
         check("userName").notEmpty().withMessage("User name is required."),
-        check("about").notEmpty().withMessage("User summery is required."),
         check("userImage")
             .notEmpty()
             .withMessage("User image URL is required."),

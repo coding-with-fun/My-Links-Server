@@ -154,7 +154,7 @@ router.patch(
     "/updatelink",
     userAuth,
     [
-        check("linkID").notEmpty().withMessage("Link ID is required."),
+        check("_id").notEmpty().withMessage("Link ID is required."),
         check("name").notEmpty().withMessage("Link name is required."),
         check("url")
             .notEmpty()
@@ -173,7 +173,7 @@ router.patch(
                 });
             }
 
-            const { linkID, name, url } = req.body;
+            const { _id, name, url } = req.body;
 
             let newUrl = url;
 
@@ -182,7 +182,7 @@ router.patch(
             }
 
             const updatedUser = await User.updateOne(
-                { "links._id": linkID },
+                { "links._id": _id },
                 {
                     $set: {
                         "links.$.name": name,
@@ -223,7 +223,7 @@ router.patch(
 router.delete(
     "/deletelink",
     userAuth,
-    [check("linkID").notEmpty().withMessage("Link ID is required.")],
+    [check("_id").notEmpty().withMessage("Link ID is required.")],
     async (req, res) => {
         try {
             const errors = validationResult(req);
@@ -236,14 +236,14 @@ router.delete(
             }
 
             const userID = req.user.id;
-            const { linkID } = req.body;
+            const { _id } = req.body;
             const options = {
                 new: true,
             };
 
             const updatedUser = await User.findByIdAndUpdate(
                 userID,
-                { $pull: { links: { _id: linkID } } },
+                { $pull: { links: { _id: _id } } },
                 options
             );
 
